@@ -49,12 +49,19 @@ namespace PrusaCamera.Services
 
         private async Task UploadScreenshot()
         {
-            _logger.LogInformation("Starting to send image to PrusaConnect");
             using (var imageStream = await _cameraService.CaptureFrame())
             {
-                await _prusaConnectService.UploadScreenshot(imageStream);
+                if (imageStream != null)
+                {
+                    _logger.LogInformation("Starting to send image to PrusaConnect");
+                    await _prusaConnectService.UploadScreenshot(imageStream);
+                    _logger.LogInformation("Finished sending image to PrusaConnect");
+                }
+                else
+                {
+                    _logger.LogDebug("Captured image was empty/null and no upload was sent");
+                }
             }
-            _logger.LogInformation("Finished sending image to PrusaConnect");
         }
     }
 }

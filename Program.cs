@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using prusa_camera.Configuration;
 using PrusaCamera.Configuration;
 using PrusaCamera.Services;
 using Serilog;
@@ -42,12 +43,13 @@ namespace PrusaCamera
                     services.AddHttpClient<IPrusaConnectService, PrusaConnectService>((serviceCollection, handler) =>
                     {
                         var connectSettings = serviceCollection.GetRequiredService<IOptions<PrusaConnectSettings>>().Value;
+                        var applicationSettings = serviceCollection.GetRequiredService<IOptions<ApplicationSettings>>().Value;
 
                         handler.BaseAddress = new Uri(connectSettings.Url);
 
                         handler
                             .DefaultRequestHeaders
-                            .Add("Fingerprint", Environment.MachineName);
+                            .Add("Fingerprint", applicationSettings.Name);
 
                         handler
                             .DefaultRequestHeaders
@@ -56,7 +58,6 @@ namespace PrusaCamera
 
                     services.AddHostedService<TimedConnectUploadBackgroundService>();
                 });
-
 
                 using (var host = hostBuilder.Build())
                 {

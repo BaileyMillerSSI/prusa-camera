@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using PrusaCamera.Configuration;
+using System.Net.Http.Json;
 
 namespace PrusaCamera.Services
 {
@@ -30,7 +31,7 @@ namespace PrusaCamera.Services
 
                 inMemoryImageStream.Position = 0;
                 
-                var response = await _uploadClient
+                await _uploadClient
                     .PutAsync("/c/snapshot", new ByteArrayContent(inMemoryImageStream.ToArray()));
             }
         }
